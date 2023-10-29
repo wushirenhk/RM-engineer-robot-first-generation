@@ -1,0 +1,82 @@
+#ifndef __INERTIALSENSOR_H__
+#define __INERTIALSENSOR_H__
+
+#include "Rotation.h"
+#include "Error.h"
+
+#define MAX_INERTIALSENSOR_BACKEND_NUM 3
+
+// 声明惯性传感器backend类
+class InertialSensor_Backend;
+
+// 惯性传感器
+class InertialSensor
+{
+public:
+  InertialSensor();
+  friend class InertialSensor_Backend;
+  friend class InertialSensor_BMI088;
+  void init(void);
+  void update(void);
+
+  // 获取相应id的imu(单imu时默认id为0)的加速度
+  Vector3f getAccel(uint16_t id = 0)
+  {
+    return accel[id];
+  }
+
+  // 获取相应id的imu(单imu时默认id为0)的陀螺仪数据
+  Vector3f getGyro(uint16_t id = 0)
+  {
+    return gyro[id];
+  }
+
+  // 获取相应id的imu(单imu时默认id为0)的温度
+  float getTemperature(uint16_t id = 0);
+
+  // 获取相应id的imu(单imu时默认id为0)的数据有效性
+  bool isValid(uint16_t id = 0)
+  {
+    return valid[id];
+  }
+
+  bool isInited(uint16_t id = 0)
+  {
+    return inited[id];
+  }
+  InertialSensor_Backend * findBackendById(uint8_t id)
+  {
+    if(id < backend_count)
+      return backends[id];
+    else
+    {
+      #ifdef DEBUG_MODE
+      error.error_code.inertial_sensor_find_id_out_of_range = 1;
+      error.Error_Handler();
+      #endif
+    }
+  }
+
+  void calibGyro(uint16_t id = 0, uint32_t cnt = 10000);
+  uint8_t addBackend(InertialSensor_Backend *backend);
+  
+protected:
+  void detectBackend(void);
+
+  InertialSensor_Backend *backends[MAX_INERTIALSENSOR_BACKEND_NUM];
+  uint16_t backend_count;
+
+  // 各imu的安装方向
+  RotationPreset gyro_orientation[MAX_INERTIALSENSOR_BACKEND_NUM];
+  RotationPreset accel_orientation[MAX_INERTIALSENSOR_BACKEND_NUM];
+
+  Vector3f gyro[MAX_INERTIALSENSOR_BACKEND_NUM];
+  Vector3f accel[MAX_INERTIALSENSOR_BACKEND_NUM];
+
+  bool valid[MAX_INERTIALSENSOR_BACKEND_NUM];
+
+  bool inited[MAX_INERTIALSENSOR_BACKEND_NUM];
+
+};
+
+#endif

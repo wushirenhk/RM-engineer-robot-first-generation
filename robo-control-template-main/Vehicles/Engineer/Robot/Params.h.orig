@@ -1,0 +1,57 @@
+#ifdef TEMPLATE
+#ifndef PARAMS_H
+#define PARAMS_H
+
+#include "Motor_RM.h"
+#include "PID_Controller.h"
+
+typedef struct _Control_Tasks_Interval_t
+{
+  float ammol_task_interval;
+    float chassis_task_interval;
+      float gimbal_task_interval;
+  
+}Control_Tasks_Interval_t;
+  
+
+typedef struct _Init_Params_t
+{
+  Motor_RM_Params_t gimbal_yaw,
+                    gimbal_pitch,
+                    chassis_motor_1,
+                    chassis_motor_2,
+                    chassis_motor_3,
+                    chassis_motor_4,
+                    ammo_booster_motor_1,
+                    ammo_booster_motor_2,
+                    trigger_motor;
+
+  PID_Params_t gimbal_yaw_ang,
+                    gimbal_yaw_ang_vel,
+                    gimbal_pitch_ang,
+                    gimbal_pitch_ang_vel,
+                    chassis_motor_1_ang_vel,
+                    chassis_motor_2_ang_vel,
+                    chassis_motor_3_ang_vel,
+                    chassis_motor_4_ang_vel,
+                    ammo_booster_motor_1_ang_vel,
+                    ammo_booster_motor_2_ang_vel,
+                    trigger_motor_ang,
+                    trigger_motor_ang_vel;
+  
+} Init_Params_t;
+
+class Params
+{
+public:
+  Params() {}
+  void initMotorsParamsRM();
+  Init_Params_t rm_motor_params;
+
+};
+
+
+
+
+#endif
+#endif

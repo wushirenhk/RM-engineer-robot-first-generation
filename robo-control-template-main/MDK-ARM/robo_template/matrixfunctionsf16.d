@@ -1,0 +1,37 @@
+robo_template/matrixfunctionsf16.o: \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\MatrixFunctionsF16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_add_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\matrix_functions_f16.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\arm_math_types_f16.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\arm_math_types.h \
+  ..\Drivers\CMSIS\Include\cmsis_compiler.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ..\Drivers\CMSIS\Include\cmsis_armclang.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\string.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\math.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\float.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\limits.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\arm_math_memory.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\none.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\utils.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_sub_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_trans_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_scale_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_mult_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_vec_mult_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_cmplx_trans_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_cmplx_mult_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_inverse_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\matrix_utils.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_init_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_cholesky_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_solve_upper_triangular_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_solve_lower_triangular_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_mat_qr_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\MatrixFunctions\arm_householder_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\basic_math_functions_f16.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\fast_math_functions_f16.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\fast_math_functions.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\basic_math_functions.h

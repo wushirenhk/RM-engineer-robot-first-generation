@@ -1,0 +1,57 @@
+mg电机：
+Arm_off：-150 75（+225）
+Arm_normal：（GIMBAL_FREE）
+取矿normal回来 =  -86（+60）50（+136）
+兑换normal回来 =  -77
+取金矿中间值 = -90
+取银矿中间值 = -60
+取地面中间值 = -17
+兑换中间值 = -115
+
+Arm_AirConnection:（GIMBAL_LOCK）
+-26
+
+Arm_SilveryOre：（GIMBAL_LOCK）
+-58
+改后+12（全部加大70）
+
+Arm_GroundOre：（GIMBAL_LOCK）
+-17
+
+Arm_OrePlacement：（GIMBAL_LOCK）
+-135
+从normal进入中间值：-100
+
+Arm_HoldOre：（GIMBAL_LOCK）
+-97
+从银矿进入中间值：-65
+
+dm2电机：
+Arm_normal:
+-0.068
+准备兑换：0.05
+取地面矿中间值：0.05
+
+Arm_AirConnection
+-1.37
+
+Arm_SilveryOre:
+-1.73
+改后+0.483（全部加大2.213）
+
+Arm_GroundOre:
+-2.59
+
+Arm_OrePlacement:
+-2.27
+中间值：-1.225
+
+Arm_HoldOre：
+0.186
+normal中间值：-0.5
+银矿中间值：保持不变
+
+dm1电机：
+2.02——2.06基本不变
+
+

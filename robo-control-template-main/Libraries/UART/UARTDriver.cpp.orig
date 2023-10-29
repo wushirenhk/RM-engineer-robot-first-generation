@@ -1,0 +1,113 @@
+#include "UARTDriver.h"
+
+void usart1_tx_dma_init(void)
+{
+    //enable the DMA transfer for the receiver request
+    //使能DMA串口接收
+    SET_BIT(huart1.Instance->CR3, USART_CR3_DMAT);
+}
+void usart1_tx_dma_enable(uint8_t *data, uint16_t len)
+{
+
+    //disable DMA
+    //失效DMA
+    __HAL_DMA_DISABLE(&hdma_usart1_tx);
+    while(hdma_usart1_tx.Instance->CR & DMA_SxCR_EN)
+    {
+        __HAL_DMA_DISABLE(&hdma_usart1_tx);
+    }
+
+    //clear flag
+    //清除标志位
+    __HAL_DMA_CLEAR_FLAG(&hdma_usart1_tx, DMA_HISR_TCIF7);
+    __HAL_DMA_CLEAR_FLAG(&hdma_usart1_tx, DMA_HISR_HTIF7);
+
+    //set data address
+    //设置数据地址
+    hdma_usart1_tx.Instance->M0AR = (uint32_t)(data);
+    //set data length
+    //设置数据长度
+    hdma_usart1_tx.Instance->NDTR = len;
+
+    //enable DMA
+    //使能DMA
+    __HAL_DMA_ENABLE(&hdma_usart1_tx);
+}
+void UART1_TX_DMA_Send(uint8_t *buffer, uint16_t length)
+{
+    //等待上一次的数据发送完毕
+	while(HAL_DMA_GetState(&hdma_usart1_tx) != HAL_DMA_STATE_READY){}
+    //while(__HAL_DMA_GET_COUNTER(&hdma_usart1_tx));
+	
+    //关闭DMA
+    __HAL_DMA_DISABLE(&hdma_usart1_tx);
+
+    //开始发送数据
+    HAL_UART_Transmit_DMA(&huart1, buffer, length);
+}
+/***********************************************************************
+** 函 数 名： Uart_SendString()
+** 函数说明： huart1发送字符串
+**---------------------------------------------------------------------
+** 输入参数： str[]
+** 返回参数： 无
+***********************************************************************/
+void Uart_SendString(const char str[]) {
+	// HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 1000);
+	// HAL_Delay(1);
+  if(HAL_DMA_GetState(&hdma_usart1_tx) == HAL_DMA_STATE_READY){
+        __HAL_DMA_DISABLE(&hdma_usart1_tx);
+        //开始发送数据
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)str, strlen(str));
+  // usart1_tx_dma_enable((uint8_t *)str, strlen(str));
+  }
+
+}
+
+/***********************************************************************
+** 函 数 名： Uart_SendChar()
+** 函数说明： huart1发送字符
+**---------------------------------------------------------------------
+** 输入参数： char c
+** 返回参数： 无
+***********************************************************************/
+void Uart_SendChar(char c) {
+	uint8_t temp[1] = {c};
+	//HAL_UART_Transmit(&huart1, temp, 1, 1000);
+  HAL_UART_Transmit_DMA(&huart1, temp, 1);
+	// HAL_Delay(1);
+}
+
+/***********************************************************************
+** 函 数 名： Debug_Printf()
+** 函数说明： 
+**---------------------------------------------------------------------
+** 输入参数： *format
+** 返回参数： 无
+***********************************************************************/
+void Debug_Printf(const char *format,...) {
+	#ifdef DEBUG_MODE
+	static char buf[256] = {0};
+	static va_list ap;//定义一个va_list变量ap
+	va_start(ap, format);
+	
+	vsprintf(buf, format, ap);
+	va_end(ap);
+	Uart_SendString(buf);
+
+	#endif
+}
+
+/***********************************************************************
+** 函 数 名： Debug_Printf()
+** 函数说明： 
+**---------------------------------------------------------------------
+** 输入参数： *format
+** 返回参数： 无
+***********************************************************************/
+void Debug_Draw_Printf(UART_HandleTypeDef *huart, uint8_t name, int16_t value)
+{
+  char buf[20];
+  sprintf(buf, "Line%d=%d,", name, value);
+  usart_printf(huart,buf);
+}

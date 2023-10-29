@@ -1,0 +1,276 @@
+/***************************************************************************
+**   					             大连理工大学 凌BUG战队
+**   					               凌以青云，翥以极心!
+**-------------------------------------------------------------------------
+** 项    目：   robo_template
+** 文 件 名：   ChassisControlTask.cpp
+** 文件说明：   云台控制任务
+**-------------------------------------------------------------------------
+**						*修订*
+**	*版本*							*修改内容*							*修改人*      			 *日期*
+**	 1.0							   初始版本						     林子涵     	     2022-07-26
+***************************************************************************/
+#include "/Chassis/ChassisControlTask.h"
+#include "/Robot/Robot.h"
+#include "/Robot/Params.h"
+#include "UARTDriver.h"
+
+/***********************************************************************
+** 函 数 名： ChassisControlTask构造函数
+** 函数说明： 指定robot引用，CAN设备引用，指定电机CAN总线id
+**            和CAN总线数据包发送起始下标，指定任务更新时间间隔，同时
+**            给电机注册Motor_RM_PIDControlTask任务
+**---------------------------------------------------------------------
+** 输入参数： robot引用、CAN设备引用、yaw和pitch轴电机CAN总线id、
+**            CAN总线数据包发送起始下标、任务更新时间间隔
+** 返回参数： 无
+***********************************************************************/
+ChassisControlTask::ChassisControlTask(
+  Robot &robot0,
+  Motor_RM_Params_t *m1, PID_Params_t *m1_ang, PID_Params_t *m1_ang_vel,
+  Motor_RM_Params_t *m2, PID_Params_t *m2_ang, PID_Params_t *m2_ang_vel,
+  Motor_RM_Params_t *m3, PID_Params_t *m3_ang, PID_Params_t *m3_ang_vel,
+  Motor_RM_Params_t *m4, PID_Params_t *m4_ang, PID_Params_t *m4_ang_vel,
+  timeus_t interval_tick_us0
+) : Task_Base(robot0)
+{
+  this->interval_tick_us = interval_tick_us0;
+
+  if(m1 != NULL)
+  {
+    if(m1->canx == 1)
+    {
+      this->motor_1_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can1_device,
+          m1->can_rx_id,
+          m1->can_tx_id,
+          m1->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m1->interval);
+    }
+    else if(m1->canx == 2)
+    {
+      this->motor_1_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can2_device,
+          m1->can_rx_id,
+          m1->can_tx_id,
+          m1->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m1->interval);
+    }
+    this->motor_1_pid_task->motor_backend_p->setParams(*m1);
+  }
+
+  if(m2 != NULL)
+  {
+    if(m2->canx == 1)
+    {
+      this->motor_2_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can1_device,
+          m2->can_rx_id,
+          m2->can_tx_id,
+          m2->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m2->interval);
+    }
+    else if(m2->canx == 2)
+    {
+      this->motor_2_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can2_device,
+          m2->can_rx_id,
+          m2->can_tx_id,
+          m2->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m2->interval);
+    }
+    this->motor_2_pid_task->motor_backend_p->setParams(*m2);
+
+  }
+
+  if(m3 != NULL)
+  {
+    if(m3->canx == 1)
+    {
+      this->motor_3_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can1_device,
+          m3->can_rx_id,
+          m3->can_tx_id,
+          m3->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m3->interval);
+    }
+    else if(m3->canx == 2)
+    {
+      this->motor_3_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can2_device,
+          m3->can_rx_id,
+          m3->can_tx_id,
+          m3->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m3->interval);
+    }
+    this->motor_3_pid_task->motor_backend_p->setParams(*m3);
+
+  }
+  if(m4 != NULL)
+  {
+    if(m4->canx == 1)
+    {
+      this->motor_4_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can1_device,
+          m4->can_rx_id,
+          m4->can_tx_id,
+          m4->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m1->interval);
+    }
+    else if(m4->canx == 2)
+    {
+      this->motor_4_pid_task = new Motor_RM_PIDControlTask(robot0,
+          robot0.can2_device,
+          m4->can_rx_id,
+          m4->can_tx_id,
+          m4->can_tx_data_start_pos,
+          RoboMaster_3508,
+          m4->interval);
+    }
+    this->motor_4_pid_task->motor_backend_p->setParams(*m4);
+  }
+
+  if(m1_ang_vel != NULL)
+  {
+    this->motor_1_pid_task->getAngularVelocityTaskPointer()->setPIDControllerParams(*m1_ang_vel);
+    this->motor_1_pid_task->getAngularVelocityTaskPointer()->setInterval((*m1_ang_vel).interval);
+  }
+
+  if(m1_ang != NULL)
+  {
+    this->motor_1_pid_task->getAngleTaskPointer()->setPIDControllerParams(*m1_ang);
+    this->motor_1_pid_task->getAngleTaskPointer()->setInterval((*m1_ang).interval);
+  }
+
+
+  if(m2_ang_vel != NULL)
+  {
+    this->motor_2_pid_task->getAngularVelocityTaskPointer()->setPIDControllerParams(*m2_ang_vel);
+    this->motor_2_pid_task->getAngularVelocityTaskPointer()->setInterval((*m2_ang_vel).interval);
+  }
+
+  if(m2_ang != NULL)
+  {
+    this->motor_2_pid_task->getAngleTaskPointer()->setPIDControllerParams(*m2_ang);
+    this->motor_2_pid_task->getAngleTaskPointer()->setInterval((*m2_ang).interval);
+  }
+
+  if(m3_ang_vel != NULL)
+  {
+    this->motor_3_pid_task->getAngularVelocityTaskPointer()->setPIDControllerParams(*m3_ang_vel);
+    this->motor_3_pid_task->getAngularVelocityTaskPointer()->setInterval((*m3_ang_vel).interval);
+  }
+
+  if(m3_ang != NULL)
+  {
+    this->motor_3_pid_task->getAngleTaskPointer()->setPIDControllerParams(*m3_ang);
+    this->motor_3_pid_task->getAngleTaskPointer()->setInterval((*m3_ang).interval);
+  }
+
+  if(m4_ang_vel != NULL)
+  {
+    this->motor_4_pid_task->getAngularVelocityTaskPointer()->setPIDControllerParams(*m4_ang_vel);
+    this->motor_4_pid_task->getAngularVelocityTaskPointer()->setInterval((*m4_ang_vel).interval);
+  }
+
+  if(m4_ang != NULL)
+  {
+    this->motor_4_pid_task->getAngleTaskPointer()->setPIDControllerParams(*m4_ang);
+    this->motor_4_pid_task->getAngleTaskPointer()->setInterval((*m4_ang).interval);
+  }
+
+}
+
+/***********************************************************************
+** 函 数 名： ChassisControlTask::init()
+** 函数说明： 注册云台各个电机Motor_RM_PIDControlTask任务
+**---------------------------------------------------------------------
+** 输入参数： 无
+** 返回参数： 无
+***********************************************************************/
+void ChassisControlTask::init(void)
+{
+  inited = true;
+  if(motor_1_pid_task != NULL)
+    robot.scheduler.registerTask(motor_1_pid_task);
+  if(motor_2_pid_task != NULL)
+    robot.scheduler.registerTask(motor_2_pid_task);
+  if(motor_3_pid_task != NULL)
+    robot.scheduler.registerTask(motor_3_pid_task);
+  if(motor_4_pid_task != NULL)
+    robot.scheduler.registerTask(motor_4_pid_task);
+
+  if(motor_1_pid_task->getAngleTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_1_pid_task->getAngleTaskPointer());
+  if(motor_1_pid_task->getAngularVelocityTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_1_pid_task->getAngularVelocityTaskPointer());
+
+  if(motor_2_pid_task->getAngleTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_2_pid_task->getAngleTaskPointer());
+  if(motor_2_pid_task->getAngularVelocityTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_2_pid_task->getAngularVelocityTaskPointer());
+
+  if(motor_3_pid_task->getAngleTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_3_pid_task->getAngleTaskPointer());
+  if(motor_3_pid_task->getAngularVelocityTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_3_pid_task->getAngularVelocityTaskPointer());
+
+  if(motor_4_pid_task->getAngleTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_4_pid_task->getAngleTaskPointer());
+  if(motor_4_pid_task->getAngularVelocityTaskPointer() != NULL)
+    robot.scheduler.registerTask(motor_4_pid_task->getAngularVelocityTaskPointer());
+}
+
+/***********************************************************************
+** 函 数 名： ChassisControlTask::update(timeus_t dT_us)
+** 函数说明： 通过云台电机编码器和IMU计算云台Yaw轴机构、车底盘
+**            等部分的空间姿态，更新云台各个电机控制任务，并发送
+**---------------------------------------------------------------------
+** 输入参数： 无
+** 返回参数： 无
+***********************************************************************/
+void ChassisControlTask::update(timeus_t dT_us)
+{
+//  can_tx_data[0] = (motor_send[0] >> 8);
+//  can_tx_data[1] = motor_send[0];
+//  can_tx_data[2] = (motor_send[1] >> 8);
+//  can_tx_data[3] = motor_send[1];
+//  can_tx_data[4] = (motor_send[2] >> 8);
+//  can_tx_data[5] = motor_send[2];
+//  can_tx_data[6] = (motor_send[3] >> 8);
+//  can_tx_data[7] = motor_send[3];
+//  motor_1_pid_task->motor_backend_p->setMotorInput(motor_send[0]);
+//  motor_2_pid_task->motor_backend_p->setMotorInput(motor_send[1]);
+//  motor_3_pid_task->motor_backend_p->setMotorInput(motor_send[2]);
+//  motor_4_pid_task->motor_backend_p->setMotorInput(motor_send[3]);
+
+  exp_vel[0] = -vy - vx;
+  exp_vel[1] = -vy + vx;
+  exp_vel[2] = +vy + vx;
+  exp_vel[3] = +vy - vx;
+
+  motor_1_pid_task->getAngularVelocityTaskPointer()->setPIDControllerExpect(exp_vel[0]);
+  motor_2_pid_task->getAngularVelocityTaskPointer()->setPIDControllerExpect(exp_vel[1]);
+  motor_3_pid_task->getAngularVelocityTaskPointer()->setPIDControllerExpect(exp_vel[2]);
+  motor_4_pid_task->getAngularVelocityTaskPointer()->setPIDControllerExpect(exp_vel[3]);
+  motor_1_pid_task->getAngularVelocityTaskPointer()->setPIDControllerFeedback(motor_1_pid_task->motor_backend_p->getCommonMeasurement().linear.velocity);
+    motor_1_pid_task->getAngularVelocityTaskPointer()->setPIDControllerFeedback(motor_1_pid_task->motor_backend_p->getCommonMeasurement().linear.velocity);
+      motor_1_pid_task->getAngularVelocityTaskPointer()->setPIDControllerFeedback(motor_1_pid_task->motor_backend_p->getCommonMeasurement().linear.velocity);
+        motor_1_pid_task->getAngularVelocityTaskPointer()->setPIDControllerFeedback(motor_1_pid_task->motor_backend_p->getCommonMeasurement().linear.velocity);
+}
+
+/***********************************************************************
+** 函 数 名： ChassisControlTask::uninit()
+** 函数说明： 任务反初始化
+**---------------------------------------------------------------------
+** 输入参数： 无
+** 返回参数： 无
+***********************************************************************/
+void ChassisControlTask::uninit(void) {}

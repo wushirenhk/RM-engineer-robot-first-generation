@@ -1,0 +1,64 @@
+#ifdef TEMPLATE
+
+#ifndef CHASSIS_CONTROL_TASK_H
+#define CHASSIS_CONTROL_TASK_H
+
+#include "Motor.h"
+#include "Motor_RM_Tasks.h"
+#include "Filters.h"
+#include "/Robot/Params.h"
+
+//#define CAN_CHASSIS_MOTOR_SUPERCAP_CTRL_ID      0x300
+//#define CAN_CHASSIS_CTRL_ID                     0x200
+//#define CAN_3508_MOTOR1_ID                      0x201
+//#define CAN_3508_MOTOR2_ID                      0x202
+//#define CAN_3508_MOTOR3_ID                      0x203
+//#define CAN_3508_MOTOR4_ID                      0x204
+
+
+
+class ChassisControlTask : public Task_Base
+{
+public:
+  friend class Robot;
+  friend class MainControlTask;
+  friend class RemoteControlTask;
+
+  ChassisControlTask(
+    Robot &robot0,
+    Motor_RM_Params_t *m1, PID_Params_t *m1_ang, PID_Params_t *m1_ang_vel,
+    Motor_RM_Params_t *m2, PID_Params_t *m2_ang, PID_Params_t *m2_ang_vel,
+    Motor_RM_Params_t *m3, PID_Params_t *m3_ang, PID_Params_t *m3_ang_vel,
+    Motor_RM_Params_t *m4, PID_Params_t *m4_ang, PID_Params_t *m4_ang_vel,
+    timeus_t interval_tick_us0 = 0
+  ) ;
+
+  virtual ~ChassisControlTask(void) {}
+
+  virtual void init(void);
+
+  virtual void update(timeus_t dT_us);
+
+  virtual void uninit(void);
+
+protected:
+  // uint8_t can_tx_data[8];
+  Motor_RM_PIDControlTask *motor_1_pid_task, *motor_2_pid_task, *motor_3_pid_task, *motor_4_pid_task;
+  float vx; // 底盘x方向速度[m/s]
+    float vy // y方向速度[m/s]
+      float vw; // 绕z轴角速度[rad/s]
+  float exp_vel[4] = {0};
+  int16_t motor_send[4] = {0}; // 最终发给电机的数
+  /*     forward
+            X              1.0
+            |
+       M2   |   M1
+    Y ------|------        0.0
+       M3   |   M4
+            |
+            |             -1.0
+  */
+};
+#endif
+
+#endif

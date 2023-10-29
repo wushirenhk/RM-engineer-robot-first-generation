@@ -1,0 +1,27 @@
+robo_template/supportfunctionsf16.o: \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\SupportFunctionsF16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_copy_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\support_functions_f16.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\arm_math_types_f16.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\arm_math_types.h \
+  ..\Drivers\CMSIS\Include\cmsis_compiler.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ..\Drivers\CMSIS\Include\cmsis_armclang.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\string.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\math.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\float.h \
+  E:\download\ARM\ARMCLANG\Bin\..\include\limits.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\arm_math_memory.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\none.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Include\dsp\utils.h \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_fill_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_f16_to_q15.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_f16_to_float.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_f16_to_f64.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_f64_to_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_q15_to_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_float_to_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_weighted_sum_f16.c \
+  E:\download\ARM\CMSIS-DSP\1.14.2\Source\SupportFunctions\arm_barycenter_f16.c

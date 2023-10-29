@@ -1,0 +1,22 @@
+按键说明：
+**************************键盘鼠标**************************
+Ｗ A S D  前后左右
+鼠标左键   UI刷新
+Z   Arm_normal
+V   Arm_AirConnection
+X   Arm_SilveryOre
+C   Arm_GroundOre
+B   Arm_HoldOre
+F  Overturn_CW 翻矿
+CTRL+F   Overturn_IN 将矿石存入
+CTRL+鼠标左键  Overturn_OUT 将矿石取出
+R   吸矿气泵
+G   抬升气泵
+SHIFT  底盘FAST和SLOW模式切换
+鼠标右键  Gimbal_FREE和LOCK模式切换
+**************************遥控器**************************
+三位开关比赛时左下 右下
+左遥感  前后   控制dm2
+左遥感  左右   控制dm1
+右遥感  前后   控制上下3508
+右遥感  左右   控制mg1

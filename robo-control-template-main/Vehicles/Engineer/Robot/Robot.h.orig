@@ -1,0 +1,199 @@
+#ifdef TEMPLATE
+#ifndef __ROBOT_H__
+#define __ROBOT_H__
+
+#include "AttitudeSolutionTask.h"
+#include "Scheduler.h"
+#include "InertialSensor.h"
+#include "InertialSensor_BMI088.h"
+#include "RCProtocol.h"
+#include "Error.h"
+#include "LEDControlTask.h"
+#include "stdint.h"
+#include "MahonyAHRS.h"
+#include "Helper.h"
+#include "RefereeSystem.h"
+#include "RefereeSystemTask.h"
+#include "SongPlayerTask.h"
+#include "CanDevice.h"
+#include "Motor.h"
+
+#include "/Gimbal/GimbalControlTask.h"
+#include "/Chassis/ChassisControlTask.h"
+#include "/Control/MainControlTask.h"
+#include "/Remote/RemoteControlTask.h"
+#include "/Control/ComputerVisionControlTask.h"
+#include "/Ammo/AmmoControlTask.h"
+#include "/Robot/Params.h"
+
+
+extern CAN_HandleTypeDef hcan1;
+extern CAN_HandleTypeDef hcan2;
+
+
+
+class Robot
+{
+public:
+  friend class AttitudeSolutionTask;
+  friend class LEDControlTask;
+  friend class RefereeSystemTask;
+  friend class SongPlayerTask;
+  friend class Motor_RM_PIDControlTask;
+  friend class GimbalControlTask;
+  friend class CANSendTask;
+  friend class PID_GyrotempTask;
+  friend class ChassisControlTask;
+  friend class MainControlTask;
+  friend class RemoteControlTask;
+  friend class ComputerVisionControlTask;
+  friend class AmmoRM_ControlTask;
+  friend class IMUDataSyncTask;
+
+  Robot()
+  {
+    attitude_solution_task_p = new AttitudeSolutionTask(*this); // 姿态解算, 在外部中断中进行
+    led_control_task_p = new LEDControlTask(*this, 1e6f / 200.0f); // LED控制，200Hz
+    referee_system_task_p = new RefereeSystemTask(*this, 1e6f / 100.0f); // 裁判系统，100Hz
+    main_control_task_p = new MainControlTask(*this);
+    remote_control_task_p = new RemoteControlTask(*this);
+
+    ammol_task_p = new AmmoRM_ControlTask(
+      *this,
+        
+      &params.rm_motor_params.ammo_booster_motor_1,
+      NULL,
+      &params.rm_motor_params.ammo_booster_motor_1_ang_vel,
+
+      &params.rm_motor_params.ammo_booster_motor_2,
+      NULL,
+      &params.rm_motor_params.ammo_booster_motor_2_ang_vel,
+
+      &params.rm_motor_params.trigger_motor,
+      &params.rm_motor_params.trigger_motor_ang,
+      &params.rm_motor_params.trigger_motor_ang_vel,
+      
+      params.rm_motor_params.control_tasks_interval.ammo_task_interval
+    );
+
+    chassis_task_p = new ChassisControlTask(
+      *this,
+        
+      &params.rm_motor_params.chassis_motor_1,
+      NULL,
+      &params.rm_motor_params.chassis_motor_1_ang_vel,
+
+      &params.rm_motor_params.chassis_motor_2,
+      NULL,
+      &params.rm_motor_params.chassis_motor_2_ang_vel,
+
+      &params.rm_motor_params.chassis_motor_3,
+      NULL,
+      &params.rm_motor_params.chassis_motor_3_ang_vel,
+
+      &params.rm_motor_params.chassis_motor_4,
+      NULL,
+      &params.rm_motor_params.chassis_motor_4_ang_vel,
+      
+      params.rm_motor_params.control_tasks_interval.chassis_task_interval
+    );
+      
+      gimbal_task_p = new GimbalControlTask(
+      *this,
+        
+              &params.rm_motor_params.gimbal_yaw,
+      &params.rm_motor_params.gimbal_yaw_ang,
+      &params.rm_motor_params.gimbal_yaw_ang_vel,
+      
+            &params.rm_motor_params.gimbal_pitch,
+      &params.rm_motor_params.gimbal_pitch_ang,
+      &params.rm_motor_params.gimbal_pitch_ang_vel,
+      
+            params.rm_motor_params.control_tasks_interval.gimbal_task_interval
+      
+      );
+  };
+
+  void init(void);
+  void setParams(void);
+  void run(void);
+
+
+  Scheduler getScheduler(void)
+  {
+    return scheduler;
+  }
+  AttitudeSolutionTask* getAttitudeSolutionTaskPointer(void)
+  {
+    return attitude_solution_task_p;
+  }
+  LEDControlTask* getLEDControlTaskPointer(void)
+  {
+    return led_control_task_p;
+  }
+  RCProtocol* getRCProtocolPointer(void)
+  {
+    return &rc_protocol;
+  }
+  InertialSensor* getInertialSensorPointer(void)
+  {
+    return &inertial_sensors;
+  }
+  RefereeSystem *getRefereeSystemPointer(void)
+  {
+    return &referee_system;
+  }
+//  Helper *getHelperPointer(void)
+//  {
+//    return &helper;
+//  }
+  CanDevice *getCAN1DevicePointer(void)
+  {
+    return &can1_device;
+  }
+  CanDevice *getCAN2DevicePointer(void)
+  {
+    return &can2_device;
+  }
+  uint8_t getBMI088BackendId()
+  {
+    return bmi088_id;
+  }
+
+protected:
+
+  InertialSensor inertial_sensors; // imu对象
+  uint8_t bmi088_id;
+
+  RCProtocol rc_protocol;
+  Helper helper;
+  Scheduler scheduler;
+  CanDevice can1_device, can2_device;
+  Motor motors;
+  RefereeSystem referee_system; // 裁判系统
+
+  Params params;
+
+  AttitudeSolutionTask *attitude_solution_task_p;
+  LEDControlTask * led_control_task_p;
+  RefereeSystemTask *referee_system_task_p;
+
+  CANSendTask   *can2_send_chassis_task_p,
+                *can2_send_gimbal_task_p,
+                *can1_send_gimbal_ammo_task_p;
+
+  MainControlTask *main_control_task_p;
+  RemoteControlTask *remote_control_task_p;
+  ComputerVisionControlTask *cv_control_task_p;
+  
+  AmmoRM_ControlTask *ammol_task_p;
+  ChassisControlTask *chassis_task_p;
+  GimbalControlTask *gimbal_task_p;
+
+};
+
+
+
+#endif
+
+#endif

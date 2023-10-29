@@ -1,0 +1,154 @@
+/***************************************************************************
+**   					             大连理工大学 凌BUG战队
+**   					               凌以青云，翥以极心!
+**-------------------------------------------------------------------------
+** 项    目：   robo_template
+** 文 件 名：   Robot.cpp
+** 文件说明：   机器人基类
+**-------------------------------------------------------------------------
+**						*修订*
+**	*版本*							*修改内容*							*修改人*      			 *日期*
+**	 1.0							   初始版本						     季献淏     	   2022-07-10
+***************************************************************************/
+#include "/Robot/Robot.h"
+#include "arm_math.h"
+#include "Motor_RM_Tasks.h"
+#include "Params.h"
+
+/***********************************************************************
+** 函 数 名： Robot::init()
+** 函数说明： 机器人系统初始化
+**---------------------------------------------------------------------
+** 输入参数： 无
+** 返回参数： 无
+***********************************************************************/
+void Robot::init()
+{
+  
+  // 初始化任务调度器并注册任务
+  params.initMotorsParams();
+
+  attitude_solution_task_p = new AttitudeSolutionTask(*this); // 姿态解算, 在外部中断中进行
+  led_control_task_p = new LEDControlTask(*this); // LED控制
+  referee_system_task_p = new RefereeSystemTask(*this); // 裁判系统
+  main_control_task_p = new MainControlTask(*this); // 主控制
+
+  remote_control_task_p = new RemoteControlTask(*this);
+
+  bmi088_id = inertial_sensors.addBackend(new InertialSensor_BMI088(inertial_sensors, ROTATION_YAW_180)); // BMI088 绕本体Z轴旋转180度
+
+  rc_protocol.init();
+  scheduler.init();
+  can1_device.init(&hcan1);
+  can2_device.init(&hcan2);
+
+  ammo_task_p = new AmmoRM_ControlTask(
+    *this,
+
+    &params.motor_params.ammo_booster_motor_1,
+    NULL,
+    &params.motor_params.ammo_booster_motor_1_ang_vel,
+
+    &params.motor_params.ammo_booster_motor_2,
+    NULL,
+    &params.motor_params.ammo_booster_motor_2_ang_vel,
+
+    &params.motor_params.trigger_motor,
+    &params.motor_params.trigger_motor_ang,
+    &params.motor_params.trigger_motor_ang_vel
+  );
+
+  chassis_task_p = new ChassisControlTask(
+    *this,
+
+    &params.motor_params.chassis_motor_1,
+    NULL,
+    &params.motor_params.chassis_motor_1_ang_vel,
+
+    &params.motor_params.chassis_motor_2,
+    NULL,
+    &params.motor_params.chassis_motor_2_ang_vel,
+
+    &params.motor_params.chassis_motor_3,
+    NULL,
+    &params.motor_params.chassis_motor_3_ang_vel,
+
+    &params.motor_params.chassis_motor_4,
+    NULL,
+    &params.motor_params.chassis_motor_4_ang_vel
+  );
+
+  gimbal_task_p = new GimbalControlTask(
+    *this,
+
+    &params.motor_params.gimbal_yaw,
+    &params.motor_params.gimbal_yaw_ang,
+    &params.motor_params.gimbal_yaw_ang_vel,
+
+    &params.motor_params.gimbal_pitch,
+    &params.motor_params.gimbal_pitch_ang,
+    &params.motor_params.gimbal_pitch_ang_vel
+  );
+    
+      can1_send_task_0x1ff_p = new CANSendTask(
+        *this,
+        &this->can1_device,
+        0x1ff,
+        1e6f / 400.0f
+      );
+
+  ammo_task_p->setInterval(
+    params.motor_params.control_tasks_interval.ammo_task_interval
+  );
+  chassis_task_p->setInterval(
+    params.motor_params.control_tasks_interval.chassis_task_interval
+  );
+  gimbal_task_p->setInterval(
+    params.motor_params.control_tasks_interval.gimbal_task_interval
+  );
+  led_control_task_p->setInterval(
+    params.motor_params.control_tasks_interval.led_task_interval
+  );
+  referee_system_task_p->setInterval(
+    params.motor_params.control_tasks_interval.referee_system_task_interval
+  );
+
+  ammo_task_p->init();
+  chassis_task_p->init();
+  gimbal_task_p->init();
+
+  led_control_task_p->init();
+
+  attitude_solution_task_p->inited = true;
+  attitude_solution_task_p->init();
+
+  scheduler.registerTask(referee_system_task_p);
+  
+
+  scheduler.registerTask(main_control_task_p);
+  scheduler.registerTask(remote_control_task_p);
+  scheduler.registerTask(cv_control_task_p);
+  scheduler.registerTask(chassis_task_p);
+  scheduler.registerTask(gimbal_task_p);
+  scheduler.registerTask(can1_send_task_0x1ff_p);
+  scheduler.registerTask(can2_send_task_0x1ff_p);
+  scheduler.registerTask(can2_send_task_0x200_p);
+
+}
+
+/***********************************************************************
+** 函 数 名： Robot::run()
+** 函数说明： 机器人系统运行函数，此函数运行在主循环中
+**---------------------------------------------------------------------
+** 输入参数： 无
+** 返回参数： 无
+***********************************************************************/
+void Robot::run()
+{
+  scheduler.run();
+}
+
+void Robot::setParams()
+{
+
+}
